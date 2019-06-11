@@ -4,7 +4,7 @@ import axios from "axios";
 export default class Login extends Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
       email: "",
       password: "",
@@ -16,37 +16,39 @@ export default class Login extends Component {
   }
 
   handleChange(event) {
-      this.setState({
-        [event.target.name]: event.target.value,
-        errorText: ""
-      });
+    this.setState({
+      [event.target.name]: event.target.value,
+      errorText: ""
+    });
   }
 
   handleSubmit(event) {
     axios
-      .post (
-          "https://api.devcamp.space/sessions",
-          {
-            client: {
-              email: this.state.email,
-              password: this.state.password
-            }
+      .post(
+        "https://api.devcamp.space/sessions",
+        {
+          client: {
+            email: this.state.email,
+            password: this.state.password
+          }
         },
         { withCredentials: true }
       )
       .then(response => {
         if (response.data.status === "created") {
-          console.log("You are authorized to enter...");
+          this.props.handleSuccessfulAuth();
         } else {
-            this.setState ({
-                errorText: "Wrong email or password"
-            });
+          this.setState({
+            errorText: "Wrong email or password"
+          });
+          this.props.handleUnsuccessfulAuth();
         }
       })
       .catch(error => {
         this.setState({
-            errorText: "Oops! An error occured!"
-        });  
+          errorText: "Oops! An error occurred"
+        });
+        this.props.handleUnsuccessfulAuth();
       });
 
     event.preventDefault();
@@ -55,20 +57,20 @@ export default class Login extends Component {
   render() {
     return (
       <div>
-        <h1> LOGIN TO ACCESS YOUR DASHBOARD</h1>
+        <h1>LOGIN TO ACCESS YOUR DASHBOARD</h1>
 
         <div>{this.state.errorText}</div>
-        
+
         <form onSubmit={this.handleSubmit}>
-          <input 
-            type="email" 
+          <input
+            type="email"
             name="email"
             placeholder="Your email"
             value={this.state.email}
             onChange={this.handleChange}
           />
-                    
-          <input 
+
+          <input
             type="password"
             name="password"
             placeholder="Your password"
@@ -76,11 +78,10 @@ export default class Login extends Component {
             onChange={this.handleChange}
           />
 
-
           <div>
             <button type="submit">Login</button>
           </div>
-        </form>                
+        </form>
       </div>
     );
   }
